@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FERMA TP - Logistics System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .form-container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; }
+        .header-logo { background: #004a99; color: white; padding: 20px; text-align: center; border-radius: 0 0 15px 15px; }
+    </style>
+</head>
+<body>
+
+<div class="header-logo">
+    <h3>نظام تتبع اللوجيستيك - FERMA TP</h3>
+    <p>بواسطة: هشام جران</p>
+</div>
+
+<div class="container mb-5">
+    <div class="form-container">
+        <form id="logisticForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">رقم الشاحنة (Matricule)</label>
+                    <input type="text" id="matricule" class="form-control" placeholder="مثلاً: 44-أ-1234" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">السائق (Chauffeur)</label>
+                    <input type="text" id="chauffeur" class="form-control" placeholder="اسم السائق" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">نوع العملية</label>
+                <select id="flux" class="form-select">
+                    <option value="Entrée">دخول سلعة (Entrée)</option>
+                    <option value="Sortie">خروج سلعة (Sortie)</option>
+                    <option value="Interne">تحرك داخلي</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label">المادة (Produit)</label>
+                    <input type="text" id="produit" class="form-control" placeholder="رملة، كياس..." required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label">الكمية (Tonne/m³)</label>
+                    <input type="number" id="quantite" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label">رقم البون (N° Bon)</label>
+                    <input type="text" id="nbon" class="form-control" required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label">المازوط (Litre)</label>
+                    <input type="number" id="gasoil" class="form-control" value="0">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">الوجهة (Chantier)</label>
+                <input type="text" id="chantier" class="form-control" placeholder="اسم الورش">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 p-3" id="submitBtn">تسجيل البيانات الآن</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx_j7MM0TdEkvu8srMg3vYoiGcKSdHAFw4LJdo2bNY/dev';
+    const form = document.getElementById('logisticForm');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = 'جاري الإرسال...';
+
+        const data = {
+            matricule: document.getElementById('matricule').value,
+            chauffeur: document.getElementById('chauffeur').value,
+            flux: document.getElementById('flux').value,
+            produit: document.getElementById('produit').value,
+            quantite: document.getElementById('quantite').value,
+            nbon: document.getElementById('nbon').value,
+            gasoil: document.getElementById('gasoil').value,
+            chantier: document.getElementById('chantier').value,
+            km: 0 // يمكن إضافته لاحقاً
+        };
+
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', // مهم لتفادي مشاكل CORS مع Google
+            cache: 'no-cache',
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            alert('تم تسجيل المعطيات بنجاح في Google Sheets!');
+            form.reset();
+            btn.disabled = false;
+            btn.innerText = 'تسجيل البيانات الآن';
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            btn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
